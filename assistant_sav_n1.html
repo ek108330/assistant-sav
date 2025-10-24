@@ -173,37 +173,53 @@ function render(){
   els.work.style.display = atHome ? "none" : "";
   if(!atHome) renderStep();
 }
-function renderStep(){
-  const {step}=state.stack[state.stack.length-1];
+function renderStep() {
+  const { step } = state.stack[state.stack.length - 1];
   let html = `<h2>${escapeHtml(step.title)}</h2>`;
+
   const desc = step.details || step.description;
   if (desc) html += `<p>${escapeHtml(desc)}</p>`;
-  if(step.actions && step.actions.length){
-    html += `<div class="actions">` + step.actions.map(a => {
-      let iconHTMLfinal = "";
-      if (a.iconImg) iconHTMLfinal = `<div class="ico-sm"><img src="${escapeHtml(a.iconImg)}" alt=""></div>`;
-      else           iconHTMLfinal = iconHTML(a.iconKey, a.iconEmoji);
-      return `<div class="action" onclick="choose('${escapeHtml(a.next)}')">${iconHTMLfinal}<div>${escapeHtml(a.label)}</div></div>`;
-    }).join("") + `</div>`;
+
+  // Actions (cartes cliquables)
+  if (step.actions && step.actions.length) {
+    html += `<div class="actions">` +
+      step.actions.map(a => {
+        let iconHTMLfinal = "";
+        if (a.iconImg) {
+          iconHTMLfinal = `<div class="ico-sm"><img src="${escapeHtml(a.iconImg)}" alt=""></div>`;
+        } else {
+          iconHTMLfinal = iconHTML(a.iconKey, a.iconEmoji);
+        }
+        return `<div class="action" onclick="choose('${escapeHtml(a.next)}')">${iconHTMLfinal}<div>${escapeHtml(a.label)}</div></div>`;
+      }).join("") +
+      `</div>`;
   }
-  if (step.footerImg){
+
+  // Image sous les choix (footer de catégorie)
+  if (step.footerImg) {
     html += `<div style="margin-top:16px;text-align:center;">
       <img src="${escapeHtml(step.footerImg)}" alt="" class="solution-img">
     </div>`;
   }
-  if (step.resolution){
-    const solutionHTML = step.resolution.replace(/\n/g,"<br>");
-    html += `<div class="resolution"><div>✅</div><div><div>\${solutionHTML}</div>`;
-    if (step.links){
-      html += `<div class="links">` + step.links.map(l=>`<a href="${escapeHtml(l.href)}" target="_blank" rel="noopener">${escapeHtml(l.label)}</a>`).join(" • ") + `</div>`;
+
+  // Affichage de la solution (texte + liens + image)
+  if (step.resolution) {
+    const solutionHTML = step.resolution.replace(/\n/g, "<br>");
+    html += `<div class="resolution"><div>✅</div><div><div>${solutionHTML}</div>`;
+    if (step.links) {
+      html += `<div class="links">${step.links.map(l =>
+        `<a href="${escapeHtml(l.href)}" target="_blank" rel="noopener">${escapeHtml(l.label)}</a>`
+      ).join(" • ")}</div>`;
     }
-    if (step.image){
+    if (step.image) {
       html += `<img class="solution-img" src="${escapeHtml(step.image)}" alt="Capture">`;
     }
     html += `</div></div>`;
   }
+
   els.stepPanel.innerHTML = html;
 }
+
 
 /* ===== NAV ===== */
 function openScenario(sc){ state.trail=[{type:"sc",label:sc.title,data:sc}]; const first=sc.steps.find(s=>s.id===sc.entry); state.stack=[{scenario:sc,step:first}]; render(); }
