@@ -161,7 +161,7 @@ const els = {
   brandHome: document.getElementById("brandHome")
 };
 const state = { trail: [], stack: [] };
-function escapeHtml(s){return String(s).replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\' :'&#39;'}[m]));}
+function escapeHtml(s){return String(s).replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 
 /* ===== RENDU ===== */
 function render(){
