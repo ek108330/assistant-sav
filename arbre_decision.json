@@ -255,7 +255,7 @@
         "titre": "Pas de son",
         "imageMini": "captures/icon_speaker.png",
         "niveau": 1,
-        "solution": "Etape 1 : Sélectionner la sortie souhaitée:\nPS: Yealink WH62 = Casque branché au PC<br><div style='text-align:center; margin:10px 0;'><img src='captures/Visio_Options_Micro.png' style='max-width:600px; border-radius:10px; border:1px solid #2b2f3a;'></div>\nSolution 2 : Ouvrir les Paramètres → Windows Update → Rechercher des mises à jour.\nSolution 3 : Lancer Lenovo Vantage et mettre à jour les pilotes audio."
+        "solution": "Etape 1 : Sélectionner la sortie souhaitée:\nPS: Yealink WH62 = Casque branché au PC<br><div style='text-align:center; margin:10px 0;'><img src='captures/Visio_Options_Haut Parleur.png' style='max-width:600px; border-radius:10px; border:1px solid #2b2f3a;'></div>\nSolution 2 : Ouvrir les Paramètres → Windows Update → Rechercher des mises à jour.\nSolution 3 : Lancer Lenovo Vantage et mettre à jour les pilotes audio."
       }
     ]
   }
