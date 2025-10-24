@@ -1,0 +1,262 @@
+[
+  {
+    "ref": "COA",
+    "categorie": "Coaxis",
+    "titre": "Coaxis : Vous rencontrez un dysfonctionnement à la connexion au serveur ?",
+    "niveau": 0,
+    "children": [
+      {
+        "ref": "COA-1",
+        "titre": "Message d'erreur : La tentative d'ouverture de session a échoué",
+        "niveau": 1,
+        "imageMini": "captures/error_icon.png",
+        "solution": "Erreur d'identifiant ou de mot de passe probable. Vérifier soigneusement l'identifiant et le mot de passe Coaxis, puis retenter la connexion. Attention, au bout de 5 tentatives infructueuses, le compte est verrouillé pour une durée de 15 minutes."
+      },
+      {
+        "ref": "COA-2",
+        "titre": "Message d'erreur : Le bureau ne trouve pas l'ordinateur « rds.ficorec.adds »",
+        "niveau": 1,
+        "solution": "1️⃣ Vérifier la connexion réseau local => Pas de connexion réseau détectée. Vérifier le Wi-Fi/câble réseau et l’accès Internet, puis retenter.\nSi vous êtes en Wifi, vous devez utiliser le VPN, sinon vous devez voir apparaître cet icône en bas à droite du PC pour vous connecter en Interne : \n<br><img src='captures/Icone_Connexion_Reseau_Local.png' class='solution-img'><br>\n\n2️⃣ Vérifier l'utilisation du bon raccourci (Interne/Externe) => Utiliser le raccourci adapté à la situation (Connexion Interne au cabinet vs Connexion Externe via VPN).",
+        "imageMini": "captures/error_icon.png",
+        "image": "captures/Raccourcis_TSE_Coaxis.png"
+      }
+    ]
+  },
+  {
+    "ref": "VPN",
+    "categorie": "VPN (Fortinet)",
+    "titre": "VPN — Parcours de diagnostic",
+    "niveau": 0,
+    "children": [
+      {
+        "ref": "VPN-1",
+        "titre": "Au cabinet",
+        "niveau": 1,
+        "imageMini": "captures/Au_bureau.png",
+        "children": [
+          {
+            "ref": "VPN-1.1",
+            "titre": "En Wi-Fi",
+            "niveau": 2,
+            "imageMini": "captures/Wifi.png",
+            "description": "Valider l'accès Internet puis le Webmail.",
+            "solution": "Etape 1 : Tester l'accès Internet (ouvrir une page Google). Si cela ne fonctionne pas, vous n'avez pas internet. Si cela fonctionne, passer à l'étape suivante.\n\nEtape 2 : Connectez-vous à votre Webmail : <a href='https://ficorecowa.coaxis.com' target='_blank'>https://ficorecowa.coaxis.com</a>. Si le Webmail est accessible et connecté, les identifiants sont bons.\n\nEtape 3 : Tenter de se reconnecter au VPN : Si le VPN ne fonctionne toujours pas, contacter Kevin."
+          },
+          {
+            "ref": "VPN-1.2",
+            "titre": "En local (câble Ethernet)",
+            "niveau": 2,
+            "imageMini": "captures/Icone_Connexion_Reseau_Local.png",
+            "solution": "Il n'y a pas besoin de VPN pour une connexion en local au bureau, utiliser directement le raccourci TSE Ficorec Interne.",
+            "image": "captures/TSE_Interne.png"
+          }
+        ]
+      },
+      {
+        "ref": "VPN-2",
+        "titre": "En externe",
+        "niveau": 1,
+        "image": "captures/En_exterieur.png",
+        "children": [
+          {
+            "ref": "VPN-2.1",
+            "titre": "Échec VPN, erreur autre",
+            "niveau": 2,
+            "imageMini": "captures/error_icon.png",
+            "description": "Procéder par ordre : Internet → Webmail → autre réseau.",
+            "children": [
+              {
+                "ref": "VPN-2.1.1",
+                "titre": "Etape 1 : Tester l'accès Internet (ouvrir une page Google). Si cela ne fonctionne pas, vous n'avez pas internet.",
+                "imageMini": "captures/icon_internet.png",
+                "niveau": 3,
+                "children": [
+                  {
+                    "ref": "VPN-2.1.1.a",
+                    "titre": "Accès internet OK : Tester de se connecter au Webmail Coaxis",
+                    "niveau": 4,
+                    "solution": "Etape 2 : Connectez-vous à votre Webmail : <a href='https://ficorecowa.coaxis.com' target='_blank'>https://ficorecowa.coaxis.com</a>. Si le Webmail est accessible et connecté, les identifiants sont bons. Si cele ne fonctionne toujorus pas, contacter Kevin.",
+                    "imageMini": "captures/OK_icon.png"
+                  },
+                  {
+                    "ref": "VPN-2.1.1.b",
+                    "titre": "Accès internet non-fonctionnel : Vérifier la bonne connexion à un réseau Wi-Fi ou un HotSpot",
+                    "niveau": 4,
+                    "imageMini": "captures/KO_icon.png",
+                    "solution": "Se connecter à un autre réseau (Wi-Fi/Hotspot) et retenter la connexion VPN."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "ref": "VPN-2.2",
+            "titre": "Échec VPN, erreur -455",
+            "niveau": 2,
+            "imageMini": "captures/error_icon.png",
+            "image": "captures/Fortinet_45pc_erreur_login_ou_mdp.png",
+            "solution": "Erreur d'identifiants : \n\nVérifiez vos identifiants en vous connectant à votre Webmail : <a href='https://ficorecowa.coaxis.com' target='_blank'>https://ficorecowa.coaxis.com</a>. Si le Webmail est accessible et connecté, les identifiants sont bons.\n\nRessaisir les identifiants corrects et retenter la connexion VPN."
+          },
+          {
+            "ref": "VPN-2.3",
+            "titre": "Le VPN se stoppe à 45% et ne se connecte pas",
+            "niveau": 2,
+            "imageMini": "captures/error_icon.png",
+            "image": "captures/Fortinet_45pc_erreur_login_ou_mdp.png",
+            "solution": "Erreur d'identifiants : \n\nVérifiez vos identifiants en vous connectant à votre Webmail : <a href='https://ficorecowa.coaxis.com' target='_blank'>https://ficorecowa.coaxis.com</a>. Si le Webmail est accessible et connecté, les identifiants sont bons.\n\nRessaisir les identifiants corrects et retenter la connexion VPN."
+          }
+        ]
+      },
+      {
+        "ref": "VPN-3",
+        "titre": "Configuration du VPN",
+        "niveau": 1,
+        "description": "Valider l'accès Internet puis le Webmail.",
+        "solution": "Appliquer la configuration ci-dessous : ",
+        "image": "captures/Configuration_VPN_Fortinet.png"
+      }
+    ]
+  },
+  {
+    "ref": "TEA",
+    "categorie": "Teams",
+    "titre": "Teams — Connexion",
+    "niveau": 0,
+    "children": [
+      {
+        "ref": "TEA-1",
+        "titre": "Sur Coaxis",
+        "imageMini": "captures/Coaxis Logo.png",
+        "niveau": 1,
+        "solution": "Erreur de connexion : \nContacter Coaxis (téléphone — numéro enregistré dans Linkus — ou ouvrir un ticket par email).\n Il n'est pas possible de vous connecter vous-même avec vos identifiants"
+      },
+      {
+        "ref": "TEA-2",
+        "titre": "Hors Coaxis - Sur la session Windows",
+        "imageMini": "captures/w11_icone.png",
+        "niveau": 1,
+        "solution": "Erreur de connexion : \nVérifier l'utilisation du bon identifiant,\n utiliser l’identifiant Coaxis + fin de l'adresse e-mail standard.\n\nNE PAS UTILISER SON ADRESSE EMAIL HABITUELLE !\n\nExemple : Mr Jean BON => JBON@crowe-ficorec.fr\n+ le mot de passe habituel utilisé pour Coaxis."
+      }
+    ]
+  },
+  {
+    "ref": "OUT",
+    "categorie": "Outlook",
+    "titre": "Outlook — Icône d’invitation Visio Teams manquante",
+    "niveau": 0,
+    "image": "captures/Icones_invitation_teams.png",
+    "children": [
+      {
+        "ref": "OUT-1",
+        "titre": "Procédure 1 : Relancer les applications.",
+        "niveau": 1,
+        "solution": "Relancer dans l'ordre les applications : \n\nEtape 1 : Fermer Outlook\nEtape 2 : Ouvrir Teams (sur Coaxis)\n Etape 3 : Rouvrir Outlook.\nEtape 4 : Vérifier si les icones sont présents dans Outlook.\n\nEn cas d'échec, tester la Procédure N°2.",
+        "imageMini": "captures/outlook_teams.jpg"
+      },
+      {
+        "ref": "OUT-2",
+        "titre": "Procédure 2 : Réactiver le complément COM Teams.",
+        "niveau": 1,
+        "imageMini": "captures/icone_com.png",
+        "solution": "Etape 1 : Se rendre dans Fichier > Options <br><div style='text-align:center; margin:10px 0;'><img src='captures/Etape1_COM.png' style='max-width:600px; border-radius:10px; border:1px solid #2b2f3a;'></div>\n\nEtape 2 : Compléments > Compléments COm > Atteindre <br><div style='text-align:center; margin:10px 0;'><img src='captures/Etape2_COM.png' style='max-width:600px; border-radius:10px; border:1px solid #2b2f3a;'></div>\n\nEtape 3 : Désactiver puis réactiver le complément Teams <br><div style='text-align:center; margin:10px 0;'><img src='captures/Etape3_COM.png' style='max-width:600px; border-radius:10px; border:1px solid #2b2f3a;'></div>\n\nEtape 4 : Redémarrer Outlook <br><div style='text-align:center; margin:10px 0;'><img src='captures/Icones_invitation_teams.png' style='max-width:600px; border-radius:10px; border:1px solid #2b2f3a;'></div>\n\nEtape 5 : Si le complément COM n'est pas disponible ou si cela n'a pas fonctionner, contacter COAXIS."
+      }
+    ]
+  },
+  {
+    "ref": "LIN",
+    "categorie": "Téléphonie Linkus",
+    "titre": "Linkus — Connexion & MDP",
+    "niveau": 0,
+    "children": [
+      {
+        "ref": "LIN-1",
+        "titre": "Sur le PC",
+        "niveau": 1,
+        "imageMini": "captures/laptop.png",
+        "children": [
+          {
+            "ref": "LIN-1.1",
+            "titre": "Échec de connexion",
+            "niveau": 2,
+            "imageMini": "captures/error_icon.png",
+            "solution": "Vérifier l'identifiant et le mot de passe : \n\n L'identifiant : email standard\n Mot de passe : choisi à la première connexion.\nDomaine : ficorec.frycm.yeastarcloud.com",
+            "image": "captures/Vue_linkus.png"
+          },
+          {
+            "ref": "LIN-1.2",
+            "titre": "Échec réinitialisation mot de passe",
+            "niveau": 2,
+            "imageMini": "captures/password_icone.png",
+            "solution": "Appliquer la procédure interne de réinitialisation : \n\nNuméro de poste à 3 ou 4 chiffres (demandez à un quelqu'un connecté sur Linkus votre n° interne)\nAdresse mail : email standard\nDomaine : ficorec.frycm.yeastarcloud.com",
+            "image": "captures/Linkus_reinitialisation_mdp.png"
+          }
+        ]
+      },
+      {
+        "ref": "LIN-2",
+        "titre": "Sur le téléphone",
+        "niveau": 1,
+        "imageMini": "captures/phone.jpg",
+        "children": [
+          {
+            "ref": "LIN-2.1",
+            "titre": "Se connecter au compte",
+            "niveau": 2,
+            "solution": "Etape 1 : Télécharger l'application LINKUS (Yeaster Linkus Mobile Client) <br><div style='text-align:center; margin:10px 0;'><img src='captures/App_Linkus_Android.png' style='max-width:600px; border-radius:10px; border:1px solid #2b2f3a;'></div>\n\nEtape 2 : Scanner le QRCode de Linkus sur PC avec l'application Linkus du téléphone <br><div style='text-align:center; margin:10px 0;'><img src='captures/Linkus_QRCode.png' style='max-width:600px; border-radius:10px; border:1px solid #2b2f3a;'></div>\n\n"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ref": "BAD",
+    "categorie": "Badge",
+    "titre": "Badge — Lecture & Accès",
+    "niveau": 0,
+    "children": [
+      {
+        "ref": "BAD-1",
+        "titre": "Téléphone non détecté (pas de réaction du lecteur)",
+        "niveau": 1,
+        "imageMini": "captures/Badge_non_detecte.jpg",
+        "solution": "Etape 1 : Fermer complètement l’application, la relancer et retenter la présentation du téléphone contre le lecteur 2 à 3 fois.\nEtape 2 : Redémarrer le smartphone puis retester la présentation au lecteur.\nEtape 3 : Contacter Kevin si le lecteur ne réagit toujours pas.<br><div style='text-align:center; margin:10px 0;'><img src='captures/Badge Logo.png' style='max-width:200px; border-radius:10px; border:1px solid #2b2f3a;'></div>"
+      },
+      {
+        "ref": "BAD-2",
+        "titre": "Accès refusé ou lumière rouge",
+        "niveau": 1,
+        "imageMini": "captures/Acces_refuse.jpg",
+        "solution": "Porte de nos locaux (à l'étage)\n  =>📞 Contacter Kevin\n\nPorte d'entrée d'immeuble ou parking\n  =>📞 Contacter Christine"
+      }
+    ]
+  },
+  {
+    "ref": "VIS",
+    "categorie": "Visio (hors Coaxis)",
+    "titre": "Visio — Caméra / Micro / Son",
+    "niveau": 0,
+    "children": [
+      {
+        "ref": "VIS-1",
+        "titre": "Pas de caméra",
+        "imageMini": "captures/icon_webcam.png",
+        "niveau": 1,
+        "solution": "Etape 1 : Dans l’application de visio, choisir la caméra intégrée (« Integrated camera »).\n<br><div style='text-align:center; margin:10px 0;'><img src='captures/Visio_Options_Camera.png' style='max-width:600px; border-radius:10px; border:1px solid #2b2f3a;'></div>\nSolution 2 : Ouvrir les Paramètres → Windows Update → Rechercher des mises à jour.\nSolution 3 : Lancer Lenovo Vantage et mettre à jour les pilotes caméra."
+      },
+      {
+        "ref": "VIS-2",
+        "titre": "Pas de micro",
+        "imageMini": "captures/icon_micro.png",
+        "niveau": 1,
+        "solution": "Etape 1 : Sélectionner le casque WH62 comme périphérique d’entrée s’il est branché.\n<br><div style='text-align:center; margin:10px 0;'><img src='captures/Visio_Options_Micro.png' style='max-width:600px; border-radius:10px; border:1px solid #2b2f3a;'></div>\nSolution 2 : Ouvrir les Paramètres → Windows Update → Rechercher des mises à jour.\nSolution 3 : Lancer Lenovo Vantage et mettre à jour les pilotes audio."
+      },
+      {
+        "ref": "VIS-3",
+        "titre": "Pas de son",
+        "imageMini": "captures/icon_speaker.png",
+        "niveau": 1,
+        "solution": "Etape 1 : Sélectionner la sortie souhaitée:\nPS: Yealink WH62 = Casque branché au PC<br><div style='text-align:center; margin:10px 0;'><img src='captures/Visio_Options_Micro.png' style='max-width:600px; border-radius:10px; border:1px solid #2b2f3a;'></div>\nSolution 2 : Ouvrir les Paramètres → Windows Update → Rechercher des mises à jour.\nSolution 3 : Lancer Lenovo Vantage et mettre à jour les pilotes audio."
+      }
+    ]
+  }
+]

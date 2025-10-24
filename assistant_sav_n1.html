@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assistant SAV N1 — Arborescences</title>
+<!-- Version corrigée & commentée pour GitHub Pages / Netlify -->
+<style>
+  :root{
+    --bg:#0b0c0f; --card:#13151a; --muted:#1b1e26; --text:#e7e9ee; --sub:#a8afbf;
+    --accent:#4ea1ff; --ok:#37c978; --warn:#ffb84d; --danger:#ff6b6b; --radius:16px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,#0b0c0f,#10121a);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+  .container{max-width:1100px;margin:0 auto;padding:24px}
+  header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .brand{height:120px;display:block}
+  .brand-wrap{display:flex;align-items:center;gap:10px;cursor:pointer}
+  .toolbar{display:flex;gap:8px}
+  .btn{appearance:none;border:1px solid #2b2f3a;background:var(--muted);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer}
+  .btn:hover{border-color:#3a3f4d}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:12px}
+  .card{background:var(--card);border:1px solid #222635;border-radius:var(--radius);padding:18px;display:flex;gap:14px;align-items:center;cursor:pointer;transition:transform .1s,border-color .2s}
+  .card:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .ico{width:46px;height:46px;border-radius:10px;display:grid;place-items:center;background:#0f1422;border:1px solid #26304a;overflow:hidden;flex:0 0 46px}
+  .ico img{width:100%;height:100%;object-fit:contain}
+  .card h3{margin:0;font-size:17px}
+
+  .breadcrumb{display:flex;gap:8px;align-items:center;font-size:13px;margin:10px 0;flex-wrap:wrap}
+  .breadcrumb a{color:var(--accent);text-decoration:none;cursor:pointer}
+  .panel{background:var(--card);border:1px solid #222635;border-radius:var(--radius);padding:16px;margin-top:12px}
+  .panel h2{margin:0 0 8px;font-size:18px}
+  .actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:10px}
+  .action{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #2b2f3a;background:var(--muted);border-radius:12px;cursor:pointer;text-align:left;min-height:64px}
+  .action:hover{border-color:#3a3f4d}
+  .ico-sm{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:#0f1422;border:1px solid #26304a;overflow:hidden;flex:0 0 40px}
+  .ico-sm img{width:100%;height:100%;object-fit:contain}
+  .ico-sm span{font-size:20px}
+
+  .resolution{display:flex;gap:10px;align-items:flex-start;background:#0f1a14;border:1px solid #1d3b2a;border-radius:12px;padding:12px;margin-top:12px}
+  .links{font-size:13px;margin-top:6px}
+  .links a{color:#a9c7ff;text-decoration:none}
+  .links a:hover{text-decoration:underline}
+  .solution-img{display:block;max-width:100%;border-radius:10px;margin-top:8px;border:1px solid #2b2f3a}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand-wrap" id="brandHome" title="Retour à l’accueil">
+      <img class="brand" src="./captures/Logo Ficorec Inversé.png" alt="Crowe Groupe Ficorec">
+    </div>
+    <nav class="toolbar">
+      <button class="btn" id="backBtn">Retour</button>
+      <button class="btn" id="restartBtn">Recommencer</button>
+    </nav>
+  </header>
+
+  <div class="breadcrumb" id="breadcrumb"></div>
+
+  <!-- Accueil -->
+  <div class="grid" id="home">
+    <div class="card" data-cat="coaxis"><div class="ico"><img src="./captures/Coaxis Logo.png" alt="Coaxis"></div><h3>Coaxis / RDP</h3></div>
+    <div class="card" data-cat="vpn"><div class="ico"><img src="./captures/VPN Fortinet logo.png" alt="Fortinet"></div><h3>VPN (Fortinet)</h3></div>
+    <div class="card" data-cat="teams"><div class="ico"><img src="./captures/Teams Logo.png" alt="Teams"></div><h3>Teams</h3></div>
+    <div class="card" data-cat="outlook"><div class="ico"><img src="./captures/Outlook Logo.png" alt="Outlook"></div><h3>Outlook</h3></div>
+    <div class="card" data-cat="linkus"><div class="ico"><img src="./captures/Linkus Telephonie Logo.png" alt="Linkus"></div><h3>Téléphonie Linkus</h3></div>
+    <div class="card" data-cat="badge"><div class="ico"><img src="./captures/Badge Logo.png" alt="Badge"></div><h3>Badges / Accès</h3></div>
+    <div class="card" data-cat="visio"><div class="ico"><img src="./captures/Visio Logo.png" alt="Visio"></div><h3>Durant la Visio (hors Coaxis)</h3></div>
+  </div>
+
+  <div id="work" style="display:none">
+    <div class="panel" id="stepPanel"></div>
+  </div>
+</div>
+
+<script>
+/* ===== ICONES ===== */
+const ICONS = {
+  coaxis: "./captures/Coaxis Logo.png",
+  vpn: "./captures/VPN Fortinet logo.png",
+  teams: "./captures/Teams Logo.png",
+  outlook: "./captures/Outlook Logo.png",
+  linkus: "./captures/Linkus Telephonie Logo.png",
+  badge: "./captures/Badge Logo.png",
+  visio: "./captures/Visio Logo.png",
+  iconeBureau: "./captures/Au_bureau.png"
+};
+function iconHTML(key,emoji){
+  const url = key ? (ICONS[key]||"") : "";
+  return url?`<div class="ico-sm"><img src="\${url}" alt=""></div>`:`<div class="ico-sm"><span>\${emoji||"❔"}</span></div>`;
+}
+
+/* ===== MAPPINGS ===== */
+const CAT_KEY = { coaxis:"coa", vpn:"vpn", teams:"tea", outlook:"out", linkus:"lin", badge:"bad", visio:"vis" };
+const REF_ICON_KEY = { coa:"coaxis", vpn:"vpn", tea:"teams", out:"outlook", lin:"linkus", bad:"badge", vis:"visio" };
+
+/* ===== CHARGEMENT JSON ===== */
+let SCENARIOS = [];
+fetch("./arbre_decision.json")
+  .then(r => r.json())
+  .then(data => {
+    SCENARIOS = data.map(cat => ({
+      key: cat.ref.toLowerCase(),
+      title: cat.titre,
+      entry: cat.ref + "-entry",
+      steps: buildStepsFromTree(cat)
+    }));
+    bindCards();
+  })
+  .catch(err => console.error("Erreur JSON :", err));
+
+/* ===== CONSTRUCTION ETAPES ===== */
+function buildStepsFromTree(cat){
+  const steps = [];
+  function traverse(node){
+    const id = node.ref;
+    const step = { id, title: node.titre };
+    if (node.description) step.details = node.description;
+
+    if (node.children && node.children.length){
+      step.actions = node.children.map(c => ({
+        label: c.titre,
+        next: c.ref,
+        iconKey: null,                                // pas de fallback (laisser la miniature s'exprimer)
+        iconImg: c.imageMini || c.image || null       // miniature prioritaire
+      }));
+      steps.push(step);
+      node.children.forEach(traverse);
+    } else {
+      if (node.solution) step.resolution = node.solution;
+      if (node.links)    step.links = node.links;
+      if (node.image)    step.image = node.image;
+      steps.push(step);
+    }
+  }
+  traverse(cat);
+
+  return [{
+    id: cat.ref + "-entry",
+    title: cat.titre,
+    footerImg: cat.image || null, // image sous les choix
+    actions: (cat.children || []).map(c => ({
+      label: c.titre,
+      next: c.ref,
+      iconKey: REF_ICON_KEY[cat.ref.toLowerCase()] || null,
+      iconImg: c.imageMini || c.image || null
+    }))
+  }, ...steps];
+}
+
+/* ===== UI / ETAT ===== */
+const els = {
+  home: document.getElementById("home"),
+  work: document.getElementById("work"),
+  stepPanel: document.getElementById("stepPanel"),
+  breadcrumb: document.getElementById("breadcrumb"),
+  backBtn: document.getElementById("backBtn"),
+  restartBtn: document.getElementById("restartBtn"),
+  brandHome: document.getElementById("brandHome")
+};
+const state = { trail: [], stack: [] };
+function escapeHtml(s){return String(s).replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\' :'&#39;'}[m]));}
+
+/* ===== RENDU ===== */
+function render(){
+  els.breadcrumb.innerHTML = state.trail.length
+    ? state.trail.map((t,i)=> i===state.trail.length-1 ? `<span>\${escapeHtml(t.label)}</span>` : `<a onclick="navTo(\${i})">\${escapeHtml(t.label)}</a> <span>/</span>`).join(" ")
+    : "";
+  const atHome = state.trail.length===0;
+  els.home.style.display = atHome ? "grid" : "none";
+  els.work.style.display = atHome ? "none" : "";
+  if(!atHome) renderStep();
+}
+function renderStep(){
+  const {step}=state.stack[state.stack.length-1];
+  let html = `<h2>\${escapeHtml(step.title)}</h2>`;
+  const desc = step.details || step.description;
+  if (desc) html += `<p>\${escapeHtml(desc)}</p>`;
+  if(step.actions && step.actions.length){
+    html += `<div class="actions">` + step.actions.map(a => {
+      let iconHTMLfinal = "";
+      if (a.iconImg) iconHTMLfinal = `<div class="ico-sm"><img src="\${escapeHtml(a.iconImg)}" alt=""></div>`;
+      else           iconHTMLfinal = iconHTML(a.iconKey, a.iconEmoji);
+      return `<div class="action" onclick="choose('\${escapeHtml(a.next)}')">\${iconHTMLfinal}<div>\${escapeHtml(a.label)}</div></div>`;
+    }).join("") + `</div>`;
+  }
+  if (step.footerImg){
+    html += `<div style="margin-top:16px;text-align:center;">
+      <img src="\${escapeHtml(step.footerImg)}" alt="" class="solution-img">
+    </div>`;
+  }
+  if (step.resolution){
+    const solutionHTML = step.resolution.replace(/\n/g,"<br>");
+    html += `<div class="resolution"><div>✅</div><div><div>\${solutionHTML}</div>`;
+    if (step.links){
+      html += `<div class="links">` + step.links.map(l=>`<a href="\${escapeHtml(l.href)}" target="_blank" rel="noopener">\${escapeHtml(l.label)}</a>`).join(" • ") + `</div>`;
+    }
+    if (step.image){
+      html += `<img class="solution-img" src="\${escapeHtml(step.image)}" alt="Capture">`;
+    }
+    html += `</div></div>`;
+  }
+  els.stepPanel.innerHTML = html;
+}
+
+/* ===== NAV ===== */
+function openScenario(sc){ state.trail=[{type:"sc",label:sc.title,data:sc}]; const first=sc.steps.find(s=>s.id===sc.entry); state.stack=[{scenario:sc,step:first}]; render(); }
+function navTo(i){ state.trail=state.trail.slice(0,i+1); if(state.trail[state.trail.length-1]?.type!=="sc"){state.stack=[];} render(); }
+function goHome(){ state.trail=[]; state.stack=[]; render(); }
+function goBack(){ if(state.trail.length===0){goHome();return;} if(state.stack.length>1){state.stack.pop();} else {state.trail.pop();} render(); }
+function restart(){ const last=state.trail[state.trail.length-1]; if(last?.type==="sc"){ const sc=last.data; state.stack=[{scenario:sc,step:sc.steps.find(s=>s.id===sc.entry)}]; render(); } }
+function choose(nextId){ const active=state.stack[state.stack.length-1]; const next=active.scenario.steps.find(s=>s.id===nextId); if(!next)return; state.stack.push({scenario:active.scenario,step:next}); render(); }
+
+/* ===== EVENTS ===== */
+els.backBtn.addEventListener("click",goBack);
+els.restartBtn.addEventListener("click",restart);
+els.brandHome.addEventListener("click",goHome);
+function bindCards(){
+  document.querySelectorAll("#home .card").forEach(card=>{
+    card.addEventListener("click",()=>{
+      if(!SCENARIOS.length){console.warn("SCENARIOS vide : JSON non chargé ?");return;}
+      const key = CAT_KEY[card.dataset.cat] || card.dataset.cat;
+      const sc = SCENARIOS.find(s=>s.key===key);
+      if(sc) openScenario(sc);
+      else console.warn("Aucun scénario trouvé pour", key);
+    });
+  });
+}
+render();
+</script>
+</body>
+</html>
