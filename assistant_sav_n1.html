@@ -166,7 +166,7 @@ function escapeHtml(s){return String(s).replace(/[&<>\"']/g,m=>({'&':'&amp;','<'
 /* ===== RENDU ===== */
 function render(){
   els.breadcrumb.innerHTML = state.trail.length
-    ? state.trail.map((t,i)=> i===state.trail.length-1 ? `<span>\${escapeHtml(t.label)}</span>` : `<a onclick="navTo(\${i})">\${escapeHtml(t.label)}</a> <span>/</span>`).join(" ")
+    ? state.trail.map((t,i)=> i===state.trail.length-1 ? `<span>${escapeHtml(t.label)}</span>` : `<a onclick="navTo(\${i})">${escapeHtml(t.label)}</a> <span>/</span>`).join(" ")
     : "";
   const atHome = state.trail.length===0;
   els.home.style.display = atHome ? "grid" : "none";
@@ -175,30 +175,30 @@ function render(){
 }
 function renderStep(){
   const {step}=state.stack[state.stack.length-1];
-  let html = `<h2>\${escapeHtml(step.title)}</h2>`;
+  let html = `<h2>${escapeHtml(step.title)}</h2>`;
   const desc = step.details || step.description;
-  if (desc) html += `<p>\${escapeHtml(desc)}</p>`;
+  if (desc) html += `<p>${escapeHtml(desc)}</p>`;
   if(step.actions && step.actions.length){
     html += `<div class="actions">` + step.actions.map(a => {
       let iconHTMLfinal = "";
-      if (a.iconImg) iconHTMLfinal = `<div class="ico-sm"><img src="\${escapeHtml(a.iconImg)}" alt=""></div>`;
+      if (a.iconImg) iconHTMLfinal = `<div class="ico-sm"><img src="${escapeHtml(a.iconImg)}" alt=""></div>`;
       else           iconHTMLfinal = iconHTML(a.iconKey, a.iconEmoji);
-      return `<div class="action" onclick="choose('\${escapeHtml(a.next)}')">\${iconHTMLfinal}<div>\${escapeHtml(a.label)}</div></div>`;
+      return `<div class="action" onclick="choose('${escapeHtml(a.next)}')">${iconHTMLfinal}<div>${escapeHtml(a.label)}</div></div>`;
     }).join("") + `</div>`;
   }
   if (step.footerImg){
     html += `<div style="margin-top:16px;text-align:center;">
-      <img src="\${escapeHtml(step.footerImg)}" alt="" class="solution-img">
+      <img src="${escapeHtml(step.footerImg)}" alt="" class="solution-img">
     </div>`;
   }
   if (step.resolution){
     const solutionHTML = step.resolution.replace(/\n/g,"<br>");
     html += `<div class="resolution"><div>✅</div><div><div>\${solutionHTML}</div>`;
     if (step.links){
-      html += `<div class="links">` + step.links.map(l=>`<a href="\${escapeHtml(l.href)}" target="_blank" rel="noopener">\${escapeHtml(l.label)}</a>`).join(" • ") + `</div>`;
+      html += `<div class="links">` + step.links.map(l=>`<a href="${escapeHtml(l.href)}" target="_blank" rel="noopener">${escapeHtml(l.label)}</a>`).join(" • ") + `</div>`;
     }
     if (step.image){
-      html += `<img class="solution-img" src="\${escapeHtml(step.image)}" alt="Capture">`;
+      html += `<img class="solution-img" src="${escapeHtml(step.image)}" alt="Capture">`;
     }
     html += `</div></div>`;
   }
