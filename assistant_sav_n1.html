@@ -206,6 +206,8 @@ function renderStep() {
   if (step.resolution) {
     const solutionHTML = step.resolution.replace(/\n/g, "<br>");
     html += `<div class="resolution"><div>✅</div><div><div>${solutionHTML}</div>`;
+    console.log("✅ solutionHTML =", solutionHTML);
+
     if (step.links) {
       html += `<div class="links">${step.links.map(l =>
         `<a href="${escapeHtml(l.href)}" target="_blank" rel="noopener">${escapeHtml(l.label)}</a>`
