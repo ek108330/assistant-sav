@@ -4,7 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Assistant SAV N1 — Arborescences</title>
-<!-- Version corrigée & commentée pour GitHub Pages / Netlify -->
+
+<!--
+  Version avec gestion de l'historique navigateur :
+  - pushState() à chaque navigation (openScenario / choose)
+  - popstate pour revenir en arrière sans quitter la page
+  - replaceState à l'initialisation
+
+  Compatible GitHub Pages / Netlify :
+  - fetch("arbre_decision.json") au même niveau
+  - Images dans ./captures/
+-->
+
 <style>
   :root{
     --bg:#0b0c0f; --card:#13151a; --muted:#1b1e26; --text:#e7e9ee; --sub:#a8afbf;
@@ -89,7 +100,7 @@ const ICONS = {
 };
 function iconHTML(key,emoji){
   const url = key ? (ICONS[key]||"") : "";
-  return url?`<div class="ico-sm"><img src="\${url}" alt=""></div>`:`<div class="ico-sm"><span>\${emoji||"❔"}</span></div>`;
+  return url?`<div class="ico-sm"><img src="${escapeHtml(url)}" alt=""></div>`:`<div class="ico-sm"><span>${escapeHtml(emoji||"❔")}</span></div>`;
 }
 
 /* ===== MAPPINGS ===== */
@@ -98,7 +109,7 @@ const REF_ICON_KEY = { coa:"coaxis", vpn:"vpn", tea:"teams", out:"outlook", lin:
 
 /* ===== CHARGEMENT JSON ===== */
 let SCENARIOS = [];
-fetch("./arbre_decision.json")
+fetch("arbre_decision.json")
   .then(r => r.json())
   .then(data => {
     SCENARIOS = data.map(cat => ({
@@ -108,12 +119,36 @@ fetch("./arbre_decision.json")
       steps: buildStepsFromTree(cat)
     }));
     bindCards();
+
+    // Si on arrive avec un hash (#STEPID), tenter d'ouvrir directement
+    if (location.hash) {
+      const id = location.hash.slice(1);
+      const sc = SCENARIOS.find(s => s.steps.some(st => st.id === id));
+      if (sc) {
+        // Ouvre le scénario et navigue jusqu'à l'étape
+        openScenario(sc, false); // pas de pushHistory à l'ouverture directe
+        const target = sc.steps.find(st => st.id === id);
+        if (target && target.id !== sc.entry) {
+          // Rejoue le chemin minimal : on empile juste la cible
+          state.stack.push({ scenario: sc, step: target });
+          render();
+          history.replaceState(serializeHistoryState(), "", "#" + id);
+        } else {
+          history.replaceState(serializeHistoryState(), "", "#" + (state.stack.at(-1)?.step.id || ""));
+        }
+      } else {
+        history.replaceState({ trail: [], stack: [] }, "", location.pathname);
+      }
+    } else {
+      history.replaceState({ trail: [], stack: [] }, "", location.pathname);
+    }
   })
   .catch(err => console.error("Erreur JSON :", err));
 
 /* ===== CONSTRUCTION ETAPES ===== */
 function buildStepsFromTree(cat){
   const steps = [];
+
   function traverse(node){
     const id = node.ref;
     const step = { id, title: node.titre };
@@ -123,8 +158,8 @@ function buildStepsFromTree(cat){
       step.actions = node.children.map(c => ({
         label: c.titre,
         next: c.ref,
-        iconKey: null,                                // pas de fallback (laisser la miniature s'exprimer)
-        iconImg: c.imageMini || c.image || null       // miniature prioritaire
+        iconKey: null,                              // pas de fallback (laisser la miniature s'exprimer)
+        iconImg: c.imageMini || c.image || null     // miniature prioritaire
       }));
       steps.push(step);
       node.children.forEach(traverse);
@@ -135,12 +170,13 @@ function buildStepsFromTree(cat){
       steps.push(step);
     }
   }
+
   traverse(cat);
 
   return [{
     id: cat.ref + "-entry",
     title: cat.titre,
-    footerImg: cat.image || null, // image sous les choix
+    footerImg: cat.image || null, // image sous les choix (catégorie)
     actions: (cat.children || []).map(c => ({
       label: c.titre,
       next: c.ref,
@@ -150,7 +186,7 @@ function buildStepsFromTree(cat){
   }, ...steps];
 }
 
-/* ===== UI / ETAT ===== */
+/* ===== ELEMENTS & ETAT ===== */
 const els = {
   home: document.getElementById("home"),
   work: document.getElementById("work"),
@@ -161,27 +197,31 @@ const els = {
   brandHome: document.getElementById("brandHome")
 };
 const state = { trail: [], stack: [] };
+
+/* ===== UTILS ===== */
 function escapeHtml(s){return String(s).replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 
 /* ===== RENDU ===== */
 function render(){
   els.breadcrumb.innerHTML = state.trail.length
-    ? state.trail.map((t,i)=> i===state.trail.length-1 ? `<span>${escapeHtml(t.label)}</span>` : `<a onclick="navTo(\${i})">${escapeHtml(t.label)}</a> <span>/</span>`).join(" ")
+    ? state.trail.map((t,i)=> i===state.trail.length-1 ? `<span>${escapeHtml(t.label)}</span>` : `<a onclick="navTo(${i})">${escapeHtml(t.label)}</a> <span>/</span>`).join(" ")
     : "";
+
   const atHome = state.trail.length===0;
   els.home.style.display = atHome ? "grid" : "none";
   els.work.style.display = atHome ? "none" : "";
   if(!atHome) renderStep();
 }
-function renderStep() {
-  const { step } = state.stack[state.stack.length - 1];
+
+function renderStep(){
+  const {step}=state.stack[state.stack.length-1];
   let html = `<h2>${escapeHtml(step.title)}</h2>`;
 
   const desc = step.details || step.description;
   if (desc) html += `<p>${escapeHtml(desc)}</p>`;
 
   // Actions (cartes cliquables)
-  if (step.actions && step.actions.length) {
+  if(step.actions && step.actions.length){
     html += `<div class="actions">` +
       step.actions.map(a => {
         let iconHTMLfinal = "";
@@ -192,28 +232,24 @@ function renderStep() {
         }
         return `<div class="action" onclick="choose('${escapeHtml(a.next)}')">${iconHTMLfinal}<div>${escapeHtml(a.label)}</div></div>`;
       }).join("") +
-      `</div>`;
+    `</div>`;
   }
 
   // Image sous les choix (footer de catégorie)
-  if (step.footerImg) {
+  if (step.footerImg){
     html += `<div style="margin-top:16px;text-align:center;">
       <img src="${escapeHtml(step.footerImg)}" alt="" class="solution-img">
     </div>`;
   }
 
   // Affichage de la solution (texte + liens + image)
-  if (step.resolution) {
-    const solutionHTML = step.resolution.replace(/\n/g, "<br>");
+  if (step.resolution){
+    const solutionHTML = step.resolution.replace(/\n/g,"<br>");
     html += `<div class="resolution"><div>✅</div><div><div>${solutionHTML}</div>`;
-    console.log("✅ solutionHTML =", solutionHTML);
-
-    if (step.links) {
-      html += `<div class="links">${step.links.map(l =>
-        `<a href="${escapeHtml(l.href)}" target="_blank" rel="noopener">${escapeHtml(l.label)}</a>`
-      ).join(" • ")}</div>`;
+    if (step.links){
+      html += `<div class="links">${step.links.map(l=>`<a href="${escapeHtml(l.href)}" target="_blank" rel="noopener">${escapeHtml(l.label)}</a>`).join(" • ")}</div>`;
     }
-    if (step.image) {
+    if (step.image){
       html += `<img class="solution-img" src="${escapeHtml(step.image)}" alt="Capture">`;
     }
     html += `</div></div>`;
@@ -222,31 +258,75 @@ function renderStep() {
   els.stepPanel.innerHTML = html;
 }
 
-
-/* ===== NAV ===== */
-function openScenario(sc){ state.trail=[{type:"sc",label:sc.title,data:sc}]; const first=sc.steps.find(s=>s.id===sc.entry); state.stack=[{scenario:sc,step:first}]; render(); }
+/* ===== NAVIGATION ===== */
+function openScenario(sc, doPush = true){
+  state.trail=[{type:"sc",label:sc.title,data:sc}];
+  const first=sc.steps.find(s=>s.id===sc.entry);
+  state.stack=[{scenario:sc,step:first}];
+  render();
+  if (doPush) pushHistory(); // 🆕 historiser
+}
 function navTo(i){ state.trail=state.trail.slice(0,i+1); if(state.trail[state.trail.length-1]?.type!=="sc"){state.stack=[];} render(); }
-function goHome(){ state.trail=[]; state.stack=[]; render(); }
-function goBack(){ if(state.trail.length===0){goHome();return;} if(state.stack.length>1){state.stack.pop();} else {state.trail.pop();} render(); }
-function restart(){ const last=state.trail[state.trail.length-1]; if(last?.type==="sc"){ const sc=last.data; state.stack=[{scenario:sc,step:sc.steps.find(s=>s.id===sc.entry)}]; render(); } }
-function choose(nextId){ const active=state.stack[state.stack.length-1]; const next=active.scenario.steps.find(s=>s.id===nextId); if(!next)return; state.stack.push({scenario:active.scenario,step:next}); render(); }
+function goHome(){ state.trail=[]; state.stack=[]; render(); history.replaceState({ trail: [], stack: [] }, "", location.pathname); }
+function goBack(){ if(state.trail.length===0){goHome();return;} if(state.stack.length>1){state.stack.pop();} else {state.trail.pop();} render(); pushHistory(); }
+function restart(){ const last=state.trail[state.trail.length-1]; if(last?.type==="sc"){ const sc=last.data; state.stack=[{scenario:sc,step:sc.steps.find(s=>s.id===sc.entry)}]; render(); pushHistory(); } }
+function choose(nextId){
+  const active=state.stack[state.stack.length-1];
+  const next=active.scenario.steps.find(s=>s.id===nextId);
+  if(!next)return;
+  state.stack.push({scenario:active.scenario,step:next});
+  render();
+  pushHistory(); // 🆕 historiser
+}
 
-/* ===== EVENTS ===== */
+/* ===== HISTORIQUE NAVIGATEUR ===== */
+function serializeHistoryState(){
+  return {
+    trail: state.trail,
+    stack: state.stack.map(s => ({ scenario: s.scenario.key, stepId: s.step.id }))
+  };
+}
+
+function pushHistory() {
+  const data = serializeHistoryState();
+  history.pushState(data, "", "#" + (state.stack.at(-1)?.step.id || ""));
+}
+
+window.addEventListener("popstate", (event) => {
+  if (!event.state) { goHome(); return; }
+
+  const prev = event.state;
+  // On tente de retrouver le scénario à partir du premier élément du stack
+  const scKey = prev.stack[0]?.scenario;
+  const sc = SCENARIOS.find(s => s.key === scKey);
+  if (!sc) { goHome(); return; }
+
+  state.trail = prev.trail;
+  state.stack = prev.stack.map(s => ({
+    scenario: sc,
+    step: sc.steps.find(st => st.id === s.stepId)
+  })).filter(Boolean);
+
+  render();
+});
+
+/* ===== EVENEMENTS ===== */
 els.backBtn.addEventListener("click",goBack);
 els.restartBtn.addEventListener("click",restart);
 els.brandHome.addEventListener("click",goHome);
+
 function bindCards(){
   document.querySelectorAll("#home .card").forEach(card=>{
     card.addEventListener("click",()=>{
       if(!SCENARIOS.length){console.warn("SCENARIOS vide : JSON non chargé ?");return;}
       const key = CAT_KEY[card.dataset.cat] || card.dataset.cat;
       const sc = SCENARIOS.find(s=>s.key===key);
-      if(sc) openScenario(sc);
-      else console.warn("Aucun scénario trouvé pour", key);
+      if(sc) openScenario(sc); else console.warn("Aucun scénario trouvé pour", key);
     });
   });
 }
-render();
+
+render(); // rendu initial (accueil)
 </script>
 </body>
 </html>
